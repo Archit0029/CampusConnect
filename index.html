@@ -201,12 +201,25 @@ Parse.serverURL = "https://parseapi.back4app.com/";
                 </div>
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-                <div id="filterBar" class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm w-fit">
+            <!-- SEARCH AND FILTERS -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <!-- Search Input -->
+                <div class="relative w-full md:max-w-xs">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                         <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                         </svg>
+                    </div>
+                    <input type="text" oninput="handleSearch(this.value)" placeholder="Search items..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all font-medium text-sm">
+                </div>
+
+                <!-- Filter Pills -->
+                <div id="filterBar" class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm w-fit overflow-x-auto">
                     <button onclick="filterItems('all')" id="filter-all" class="filter-btn active px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all bg-slate-900 text-white">All Logs</button>
-                    <button onclick="filterItems('lost')" id="filter-lost" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Lost (Owner Reward)</button>
-                    <button onclick="filterItems('found')" id="filter-found" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Found (Handover)</button>
-                    <button onclick="filterItems('sell')" id="filter-sell" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Market (3% Fee)</button>
+                    <button onclick="filterItems('verified')" id="filter-verified" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100 flex items-center gap-1">Verified <svg class="w-3 h-3 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></button>
+                    <button onclick="filterItems('lost')" id="filter-lost" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Lost</button>
+                    <button onclick="filterItems('found')" id="filter-found" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Found</button>
+                    <button onclick="filterItems('sell')" id="filter-sell" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Market</button>
                 </div>
             </div>
 
@@ -358,6 +371,7 @@ Parse.serverURL = "https://parseapi.back4app.com/";
         // State
         let currentView = 'landing';
         let activeFilter = 'all';
+        let searchTerm = '';
         let isMyActivity = false;
         let isAdmin = false; // ADMIN STATE
         let currentFormType = 'lost';
@@ -385,6 +399,11 @@ Parse.serverURL = "https://parseapi.back4app.com/";
         function filterItems(filter) {
             activeFilter = filter;
             isMyActivity = false;
+            updateUI();
+        }
+
+        function handleSearch(val) {
+            searchTerm = val.toLowerCase();
             updateUI();
         }
 
@@ -638,10 +657,26 @@ Parse.serverURL = "https://parseapi.back4app.com/";
                 activeBtn.classList.add('bg-slate-900', 'text-white');
             }
 
-            // Filter Logic
-            const filteredData = isMyActivity 
-                ? items.filter(i => i.userId === CURRENT_USER_ID)
-                : (activeFilter === 'all' ? items : items.filter(i => i.type === activeFilter));
+            // Filter Logic - Includes Category & Verification
+            let filteredData = items;
+            
+            if (isMyActivity) {
+                filteredData = filteredData.filter(i => i.userId === CURRENT_USER_ID);
+            } else if (activeFilter === 'verified') {
+                filteredData = filteredData.filter(i => i.inStorage);
+            } else if (activeFilter !== 'all') {
+                filteredData = filteredData.filter(i => i.type === activeFilter);
+            }
+
+            // Search Logic
+            if (searchTerm) {
+                filteredData = filteredData.filter(i => 
+                    i.title.toLowerCase().includes(searchTerm) ||
+                    i.description.toLowerCase().includes(searchTerm) ||
+                    i.location.toLowerCase().includes(searchTerm) ||
+                    i.id.toLowerCase().includes(searchTerm)
+                );
+            }
 
             // Render
             grid.innerHTML = '';
