@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect | Club Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .custom-blur {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        .selection-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1), 0 10px 10px -5px rgba(79, 70, 229, 0.04);
+        }
+
+        .modal-animate {
+            animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .club-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+
+        /* Enhanced Form Button Styles */
+        .form-type-btn {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-type-btn.active-lost {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+            color: #ef4444;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.2);
+        }
+
+        .form-type-btn.active-found {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+            color: #22c55e;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.2);
+        }
+
+        .form-type-btn.active-sell {
+            background-color: #eef2ff;
+            border-color: #6366f1;
+            color: #6366f1;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- LANDING VIEW -->
+    <div id="landingView" class="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-slate-100 rounded-full blur-3xl opacity-60"></div>
+
+        <div class="max-w-4xl w-full relative z-10">
+            <header class="text-center mb-12 animate__animated animate__fadeInDown">
+                <div class="inline-flex items-center gap-2 mb-4 bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100">
+                    <svg class="text-indigo-600 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span class="text-indigo-600 font-bold tracking-tight">CampusConnect Club</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-black text-slate-900 mb-4 tracking-tight">
+                    Secure Campus <br /> <span class="text-indigo-600">Handover Hub</span>
+                </h1>
+                <p class="text-slate-500 max-w-xl mx-auto font-medium">Lost or found something? Hand it over to our club members for a safe and verified exchange.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Lost -->
+                <button onclick="navigateTo('lost')" class="selection-card group flex flex-col text-left p-8 rounded-[2rem] border-2 border-slate-100 bg-white transition-all duration-300 animate__animated animate__fadeInUp" style="animation-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-2">Collect My Item</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">Check if your lost item has been handed over. Reward includes a 5% club service fee.</p>
+                    <div class="flex items-center text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                        Check Storage <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </div>
+                </button>
+
+                <!-- Found -->
+                <button onclick="navigateTo('found')" class="selection-card group flex flex-col text-left p-8 rounded-[2rem] border-2 border-slate-100 bg-white transition-all duration-300 animate__animated animate__fadeInUp" style="animation-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-2">Hand Over Item</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">Found something? Hand it to the club. You'll receive 95% of the reward set by the owner.</p>
+                    <div class="flex items-center text-sm font-bold text-slate-900 group-hover:text-green-600 transition-colors">
+                        Submit Item <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </div>
+                </button>
+
+                <!-- Sell -->
+                <button onclick="navigateTo('sell')" class="selection-card group flex flex-col text-left p-8 rounded-[2rem] border-2 border-slate-100 bg-white transition-all duration-300 animate__animated animate__fadeInUp" style="animation-delay: 300ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-2">Marketplace</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">Secure peer-to-peer selling. Club takes 3% handling for verified safe swaps.</p>
+                    <div class="flex items-center text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                        Open Market <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboardView" class="hidden min-h-screen bg-slate-50 animate__animated animate__fadeIn">
+        <!-- Club Banner -->
+        <div class="club-gradient text-white py-2 px-4 text-center text-xs font-bold tracking-wider uppercase">
+            Club Hub: Block A, Room 302 • Storage: 5% Fee • Marketplace: 3% Fee
+        </div>
+
+        <nav class="sticky top-0 z-40 bg-white/80 custom-blur border-b border-slate-200 px-4 py-3 shadow-sm">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button onclick="backToLanding()" class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-500">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <div class="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-200">
+                            <svg class="text-white w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        </div>
+                        <h1 class="text-lg font-bold tracking-tight text-slate-800">Club Dashboard</h1>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="myActivityBtn" onclick="toggleMyActivity()" class="flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all text-slate-600 hover:bg-slate-100">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span id="activityBtnText">My Activity</span>
+                    </button>
+                    <button onclick="toggleModal('postModal', true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 text-sm font-bold transition-all shadow-lg shadow-indigo-100 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Register Item
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-6xl mx-auto p-4 md:p-8">
+            <!-- Club Info Section -->
+            <div class="mb-10 p-6 bg-white border border-slate-200 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-6 card-shadow">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-xl">CampusConnect Club Storage</h3>
+                        <p class="text-slate-500 text-sm">Safe Handover Hub: 95% Reward to Founder | Marketplace: 97% to Seller</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="text-center px-4">
+                        <p class="text-2xl font-black text-indigo-600" id="statInStorage">24</p>
+                        <p class="text-[10px] uppercase font-bold text-slate-400">In Storage</p>
+                    </div>
+                    <div class="w-px h-10 bg-slate-100"></div>
+                    <div class="text-center px-4">
+                        <p class="text-2xl font-black text-green-600" id="statReturned">142</p>
+                        <p class="text-[10px] uppercase font-bold text-slate-400">Returned</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div id="filterBar" class="flex flex-wrap gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm w-fit">
+                    <button onclick="filterItems('all')" id="filter-all" class="filter-btn active px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all bg-slate-900 text-white">All Logs</button>
+                    <button onclick="filterItems('lost')" id="filter-lost" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Lost (Owner Reward)</button>
+                    <button onclick="filterItems('found')" id="filter-found" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Found (Handover)</button>
+                    <button onclick="filterItems('sell')" id="filter-sell" class="filter-btn px-6 py-2.5 rounded-xl text-sm font-bold capitalize transition-all text-slate-500 hover:bg-slate-100">Market (3% Fee)</button>
+                </div>
+            </div>
+
+            <div id="itemsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Items injected here -->
+            </div>
+
+            <div id="emptyState" class="hidden text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
+                <div class="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="text-slate-300 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <h3 class="text-slate-900 text-xl font-bold">No active logs</h3>
+                <p class="text-slate-500 max-w-xs mx-auto mt-2">The storage is currently clear for this category.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- REGISTER ITEM MODAL -->
+    <div id="postModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 custom-blur overflow-y-auto">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden modal-animate my-auto">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900">Register with Club</h3>
+                    <p class="text-slate-400 text-sm font-medium">Log your item for secure collection/handover.</p>
+                </div>
+                <button onclick="toggleModal('postModal', false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form id="postForm" onsubmit="handlePostSubmit(event)" class="p-8 space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-800 mb-3">Service Type</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button type="button" onclick="setFormType('lost')" id="btn-lost" class="form-type-btn py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-400 text-xs font-black uppercase tracking-wider">I Lost</button>
+                        <button type="button" onclick="setFormType('found')" id="btn-found" class="form-type-btn py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-400 text-xs font-black uppercase tracking-wider">I Found</button>
+                        <button type="button" onclick="setFormType('sell')" id="btn-sell" class="form-type-btn py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-400 text-xs font-black uppercase tracking-wider">Selling</button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <input id="postTitle" required type="text" placeholder="Item Name" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all font-medium">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <input id="postLocation" required type="text" placeholder="Location Found/Lost" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all font-medium">
+                        <select id="postCategory" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all font-medium">
+                            <option>Electronics</option><option>Personal Items</option><option>Documents</option><option>Books</option>
+                        </select>
+                    </div>
+
+                    <!-- Reward / Price Field -->
+                    <div id="rewardField" class="relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <label id="priceLabel" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Set Reward Amount</label>
+                            <span id="rewardCalc" class="text-[10px] font-bold text-indigo-500 italic">95% to founder, 5% to club</span>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                            <input id="postPrice" required type="number" step="0.01" min="1" oninput="updateRewardBreakdown(this.value)" placeholder="0.00" class="w-full pl-10 pr-5 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all font-bold text-slate-900">
+                        </div>
+                        <div id="rewardBreakdown" class="mt-3 grid grid-cols-2 gap-2 text-[10px] font-bold uppercase tracking-tighter">
+                            <div id="recipientShareBox" class="bg-indigo-50 text-indigo-600 p-2 rounded-lg text-center">Founder (95%): <span id="founderShare">$0.00</span></div>
+                            <div id="clubShareBox" class="bg-slate-100 text-slate-500 p-2 rounded-lg text-center">Club (5%): <span id="clubShare">$0.00</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Message for Found Items -->
+                    <div id="foundMessage" class="hidden bg-green-50 p-4 rounded-2xl border border-green-100 flex gap-3">
+                        <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-[11px] text-green-800 font-medium">Found items do not require a reward deposit. Once the owner claims the item, you will receive 95% of the reward they set.</p>
+                    </div>
+
+                    <textarea id="postDesc" required rows="3" placeholder="Additional details..." class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all font-medium resize-none"></textarea>
+                </div>
+
+                <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" required class="mt-1 rounded border-slate-300 text-indigo-600">
+                        <span class="text-[11px] text-indigo-900 font-medium leading-tight">
+                            I agree to the club's verification policy. Handover items are held securely in Block A, Room 302.
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-slate-100 uppercase tracking-widest text-xs">
+                    Confirm & Log
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CLUB HANDOVER MODAL -->
+    <div id="contactModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 custom-blur">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden modal-animate">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-start">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">Club Handover</h3>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Payment & Verification</p>
+                    </div>
+                </div>
+                <button onclick="toggleModal('contactModal', false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-8 space-y-6">
+                <div id="rewardProtocolHeader" class="bg-green-50 p-4 rounded-2xl border border-green-100">
+                    <p class="text-[10px] text-green-600 font-black uppercase mb-1">Total Transaction Securely Held</p>
+                    <p id="protocolTotalReward" class="text-2xl font-black text-green-700">$0.00</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold">1</div>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Verify item <span class="font-bold text-indigo-600" id="protocolId">#ITEM-ID</span> with Club Member.</p>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold">2</div>
+                        <p id="protocolPaymentDetail" class="text-xs text-slate-600 leading-relaxed font-medium">Club collects commission and processes payout.</p>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold">3</div>
+                        <p class="text-xs text-slate-600 leading-relaxed font-medium">Sign receipt of collection/return.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hub Location</span>
+                    <p class="text-slate-900 font-bold">Block A, Room 302</p>
+                </div>
+
+                <button onclick="toggleModal('contactModal', false)" class="w-full bg-slate-900 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest">Proceed to Hub</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] hidden">
+        <div class="bg-slate-900 text-white px-6 py-3 rounded-full font-bold text-sm shadow-2xl flex items-center gap-3">
+            <svg class="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            <span id="toastText">Action successful!</span>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentView = 'landing';
+        let activeFilter = 'all';
+        let isMyActivity = false;
+        let currentFormType = 'lost';
+        const CURRENT_USER_ID = "user_123";
+
+        let items = [
+            { id: 402, type: 'lost', title: 'Calculus III Notes', location: 'Hall C', description: 'Spiral bound notebook.', category: 'Books', userId: 'other_user', inStorage: true, reward: 20.00 },
+            { id: 891, type: 'found', title: 'Car Keys (Toyota)', location: 'Gym Parking', description: 'Handed to Club Member Sarah.', category: 'Personal Items', userId: 'other_user', inStorage: true, reward: 50.00 },
+            { id: 124, type: 'sell', title: 'Lab Coat (Medium)', location: 'Science Dept', description: 'Clean, used for 1 semester.', category: 'Clothing', price: 20.00, userId: 'other_user', inStorage: false }
+        ];
+
+        // Functions
+        function navigateTo(filter) {
+            currentView = 'dashboard';
+            activeFilter = filter;
+            isMyActivity = false;
+            document.getElementById('landingView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            updateUI();
+        }
+
+        function backToLanding() {
+            currentView = 'landing';
+            document.getElementById('landingView').classList.remove('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+        }
+
+        function filterItems(filter) {
+            activeFilter = filter;
+            isMyActivity = false;
+            updateUI();
+        }
+
+        function toggleMyActivity() {
+            isMyActivity = !isMyActivity;
+            updateUI();
+        }
+
+        function updateRewardBreakdown(val) {
+            const num = parseFloat(val) || 0;
+            let club, recipient;
+            
+            if (currentFormType === 'sell') {
+                club = num * 0.03;
+                recipient = num * 0.97;
+                document.getElementById('recipientShareBox').innerText = 'Seller (97%): ';
+            } else {
+                club = num * 0.05;
+                recipient = num * 0.95;
+                document.getElementById('recipientShareBox').innerText = 'Founder (95%): ';
+            }
+            
+            const span = document.createElement('span');
+            span.id = 'founderShare';
+            span.innerText = '$' + recipient.toFixed(2);
+            document.getElementById('recipientShareBox').appendChild(span);
+            
+            document.getElementById('clubShare').innerText = '$' + club.toFixed(2);
+        }
+
+        function setFormType(type) {
+            currentFormType = type;
+            const rewardField = document.getElementById('rewardField');
+            const foundMsg = document.getElementById('foundMessage');
+            const postPriceInput = document.getElementById('postPrice');
+            const priceLabel = document.getElementById('priceLabel');
+            const rewardCalc = document.getElementById('rewardCalc');
+
+            // Reset Classes
+            document.querySelectorAll('.form-type-btn').forEach(btn => {
+                btn.className = 'form-type-btn py-3 rounded-2xl border-2 border-slate-100 bg-slate-50 text-slate-400 text-xs font-black uppercase tracking-wider transition-all';
+            });
+            
+            // Apply Colorful Effects
+            const activeBtn = document.getElementById(`btn-${type}`);
+            if (type === 'lost') {
+                activeBtn.className = 'form-type-btn py-3 rounded-2xl border-2 active-lost text-xs font-black uppercase tracking-wider';
+                rewardField.classList.remove('hidden');
+                foundMsg.classList.add('hidden');
+                priceLabel.innerText = 'Set Reward Amount';
+                rewardCalc.innerText = '95% to founder, 5% to club';
+                postPriceInput.required = true;
+            } else if (type === 'found') {
+                activeBtn.className = 'form-type-btn py-3 rounded-2xl border-2 active-found text-xs font-black uppercase tracking-wider';
+                rewardField.classList.add('hidden');
+                foundMsg.classList.remove('hidden');
+                postPriceInput.required = false;
+            } else {
+                activeBtn.className = 'form-type-btn py-3 rounded-2xl border-2 active-sell text-xs font-black uppercase tracking-wider';
+                rewardField.classList.remove('hidden');
+                foundMsg.classList.add('hidden');
+                priceLabel.innerText = 'Selling Price';
+                rewardCalc.innerText = '97% to seller, 3% to club';
+                postPriceInput.required = true;
+            }
+            updateRewardBreakdown(postPriceInput.value);
+        }
+
+        function toggleModal(id, show) {
+            const modal = document.getElementById(id);
+            if (show) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function openProtocol(itemId) {
+            const item = items.find(i => i.id === itemId);
+            document.getElementById('protocolId').innerText = `#ITEM-${itemId}`;
+            const amount = item.reward || item.price || 0;
+            document.getElementById('protocolTotalReward').innerText = '$' + amount.toFixed(2);
+            
+            const detail = document.getElementById('protocolPaymentDetail');
+            if (item.type === 'lost') {
+                detail.innerText = `Club processes 95% ($${(amount*0.95).toFixed(2)}) to founder upon return (5% fee).`;
+            } else if (item.type === 'sell') {
+                detail.innerText = `Club processes 97% ($${(amount*0.97).toFixed(2)}) to seller (3% fee).`;
+            } else {
+                detail.innerText = `Club handles handover verification and secure exchange.`;
+            }
+
+            toggleModal('contactModal', true);
+        }
+
+        function handlePostSubmit(e) {
+            e.preventDefault();
+            const priceVal = document.getElementById('postPrice').value;
+            const amount = priceVal ? parseFloat(priceVal) : null;
+            
+            const newItem = {
+                id: Math.floor(100 + Math.random() * 900),
+                type: currentFormType,
+                title: document.getElementById('postTitle').value,
+                location: document.getElementById('postLocation').value,
+                category: document.getElementById('postCategory').value,
+                description: document.getElementById('postDesc').value,
+                reward: currentFormType === 'lost' ? amount : null,
+                price: currentFormType === 'sell' ? amount : null,
+                date: 'Today',
+                userId: CURRENT_USER_ID,
+                inStorage: currentFormType !== 'sell'
+            };
+            
+            items.unshift(newItem);
+            toggleModal('postModal', false);
+            e.target.reset();
+            showToast("Item logged successfully!");
+            updateUI();
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').innerText = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        function deleteItem(id) {
+            items = items.filter(i => i.id !== id);
+            showToast("Log removed");
+            updateUI();
+        }
+
+        function updateUI() {
+            const grid = document.getElementById('itemsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const activityBtn = document.getElementById('myActivityBtn');
+
+            if (isMyActivity) {
+                activityBtn.classList.add('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-200');
+            } else {
+                activityBtn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-200');
+            }
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('text-slate-500', 'hover:bg-slate-100');
+            });
+            const activeBtn = document.getElementById(`filter-${activeFilter}`);
+            if (activeBtn) activeBtn.classList.add('bg-slate-900', 'text-white');
+
+            const filteredData = isMyActivity 
+                ? items.filter(i => i.userId === CURRENT_USER_ID)
+                : (activeFilter === 'all' ? items : items.filter(i => i.type === activeFilter));
+
+            grid.innerHTML = '';
+            if (filteredData.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filteredData.forEach(item => {
+                    grid.innerHTML += createItemCard(item);
+                });
+            }
+
+            document.getElementById('statInStorage').innerText = items.filter(i => i.inStorage).length;
+        }
+
+        function createItemCard(item) {
+            const isOwner = item.userId === CURRENT_USER_ID;
+            const badgeColor = item.type === 'lost' ? 'bg-red-50 text-red-600' : (item.type === 'found' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600');
+            
+            let rewardDisplay = '';
+            if (item.reward) {
+                rewardDisplay = `
+                <div class="mt-4 p-3 bg-green-50 rounded-2xl border border-green-100">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[10px] font-black text-green-600 uppercase tracking-tighter">Total Reward</span>
+                        <span class="text-[10px] font-black text-green-700">$${item.reward.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between items-center opacity-70">
+                        <span class="text-[9px] font-bold text-slate-500">To Founder (95%)</span>
+                        <span class="text-[9px] font-bold text-slate-900">$${(item.reward * 0.95).toFixed(2)}</span>
+                    </div>
+                </div>`;
+            } else if (item.price) {
+                rewardDisplay = `
+                <div class="mt-4 p-3 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <p class="text-[10px] font-black text-indigo-600 uppercase tracking-tighter mb-1">Price (3% Club Fee)</p>
+                    <p class="text-indigo-600 font-black text-xl">$${item.price.toFixed(2)}</p>
+                    <p class="text-[9px] font-bold text-slate-500">Seller Payout (97%): $${(item.price * 0.97).toFixed(2)}</p>
+                </div>`;
+            } else if (item.type === 'found') {
+                rewardDisplay = `
+                <div class="mt-4 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-1">Status</p>
+                    <p class="text-[11px] font-bold text-slate-600 italic">Waiting for owner to set reward</p>
+                </div>`;
+            }
+
+            const clubTag = item.inStorage ? `<div class="mt-3 flex items-center gap-2 text-[10px] font-bold text-indigo-600">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                VERIFIED BY CLUB
+            </div>` : '';
+
+            const actionBtn = isOwner 
+                ? `<button onclick="deleteItem(${item.id})" class="mt-6 w-full py-3 bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">Remove Log</button>`
+                : `<button onclick="openProtocol(${item.id})" class="mt-6 w-full py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
+                    ${item.type === 'lost' ? 'Hand Over (Claim 95%)' : (item.type === 'sell' ? 'Purchase Item' : 'Collect from Club')}
+                   </button>`;
+
+            return `
+                <div class="bg-white rounded-[2.5rem] border border-slate-200 card-shadow overflow-hidden p-7 animate__animated animate__fadeIn">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] uppercase tracking-widest font-black px-2.5 py-1 rounded-full ${badgeColor}">${item.type}</span>
+                        <span class="text-xs font-bold text-slate-300">#ITEM-${item.id}</span>
+                    </div>
+                    <h3 class="font-extrabold text-lg mb-1">${item.title}</h3>
+                    <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed mb-1">${item.description}</p>
+                    
+                    ${rewardDisplay}
+                    
+                    <div class="mt-4 flex items-center text-[11px] font-bold text-slate-500 bg-slate-50 p-2 rounded-xl">
+                        <svg class="w-4 h-4 mr-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                        ${item.location}
+                    </div>
+                    ${clubTag}
+                    ${actionBtn}
+                </div>
+            `;
+        }
+
+        // Initialize form view
+        setFormType('lost');
+        updateUI();
+    </script>
+</body>
+</html>
