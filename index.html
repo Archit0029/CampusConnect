@@ -360,13 +360,14 @@ Parse.serverURL = "https://parseapi.back4app.com/";
 
         // Functions
         function navigateTo(filter) {
-            currentView = 'dashboard';
-            activeFilter = filter;
-            isMyActivity = false;
-            document.getElementById('landingView').classList.add('hidden');
-            document.getElementById('dashboardView').classList.remove('hidden');
-            updateUI();
-        }
+    currentView = 'dashboard';
+    activeFilter = filter;
+    isMyActivity = false;
+    document.getElementById('landingView').classList.add('hidden');
+    document.getElementById('dashboardView').classList.remove('hidden');
+    loadItems(); // ✅ fetch from database
+}
+
 
         function backToLanding() {
             currentView = 'landing';
@@ -503,31 +504,35 @@ Parse.serverURL = "https://parseapi.back4app.com/";
         alert("Save Error: " + err.message);
     }
 }
-async function loadItems() {
-    const Item = Parse.Object.extend("ClubItems");
-    const query = new Parse.Query(Item);
-    query.descending("createdAt");
-
+async function loadItems(){
     try {
+        const Item = Parse.Object.extend("ClubItems");
+        const query = new Parse.Query(Item);
+        query.descending("createdAt");
+
         const results = await query.find();
-        items = results.map(obj => ({
-            id: obj.id,
-            type: obj.get("type"),
-            title: obj.get("title"),
-            location: obj.get("location"),
-            description: obj.get("description"),
-            category: obj.get("category"),
-            reward: obj.get("reward"),
-            price: obj.get("price"),
-            userId: obj.get("userId"),
-            inStorage: obj.get("inStorage")
+        console.log("Loaded from DB:", results.length);
+
+        items = results.map(o=>({
+            id:o.id,
+            type:o.get("type"),
+            title:o.get("title"),
+            location:o.get("location"),
+            description:o.get("description"),
+            category:o.get("category"),
+            reward:o.get("reward"),
+            price:o.get("price"),
+            userId:o.get("userId"),
+            inStorage:o.get("inStorage")
         }));
 
-        updateUI();
-    } catch (error) {
-        console.error(error);
+        updateUI();   // ✅ correct function
+
+    } catch(err) {
+        console.error("LOAD FAILED:", err);
     }
 }
+
 
 
         function showToast(text) {
@@ -652,8 +657,9 @@ async function loadItems() {
         }
 
         // Initialize form view
-        setFormType('lost');
-        updateUI();
+       setFormType('lost');
+loadItems();   // ✅ loads stored data on refresh
+
     </script>
 </body>
 </html>
