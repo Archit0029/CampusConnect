@@ -630,8 +630,8 @@ async function loadItems(){
             </div>` : '';
 
             const actionBtn = isOwner 
-                ? `<button onclick="deleteItem(${item.id})" class="mt-6 w-full py-3 bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">Remove Log</button>`
-                : `<button onclick="openProtocol(${item.id})" class="mt-6 w-full py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
+                ? `<button onclick="deleteItem('${item.id}')" class="mt-6 w-full py-3 bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">Remove Log</button>`
+                : `<button onclick="openProtocol('${item.id}')" class="mt-6 w-full py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
                     ${item.type === 'lost' ? 'Hand Over (Claim 95%)' : (item.type === 'sell' ? 'Purchase Item' : 'Collect from Club')}
                    </button>`;
 
