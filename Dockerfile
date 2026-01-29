@@ -7,9 +7,10 @@ WORKDIR /usr/share/nginx/html
 # Remove the default Nginx welcome page
 RUN rm -rf ./*
 
-# Copy your HTML file into the container
-# Note: We rename it to index.html so Nginx serves it as the entry point
-COPY campus_connect.html index.html
+# Copy the HTML file into the container
+# Using a wildcard to ensure the build finds the file even if naming varies slightly
+# We rename it to index.html so Nginx serves it as the entry point
+COPY *.html index.html
 
 # Expose port 80 to allow traffic to the web server
 EXPOSE 80
