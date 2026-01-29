@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+  <script src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+<script>
+Parse.initialize("24NNon4SAZVg0BDyYKtxn4hjdALSK13wzlD5rUvN", "0sLP9lBCf5Eb7nSCPbHvMV6pRGv0OkC13BROcEQh");
+Parse.serverURL = "https://parseapi.back4app.com/";
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -350,11 +355,8 @@
         let currentFormType = 'lost';
         const CURRENT_USER_ID = "user_123";
 
-        let items = [
-            { id: 402, type: 'lost', title: 'Calculus III Notes', location: 'Hall C', description: 'Spiral bound notebook.', category: 'Books', userId: 'other_user', inStorage: true, reward: 20.00 },
-            { id: 891, type: 'found', title: 'Car Keys (Toyota)', location: 'Gym Parking', description: 'Handed to Club Member Sarah.', category: 'Personal Items', userId: 'other_user', inStorage: true, reward: 50.00 },
-            { id: 124, type: 'sell', title: 'Lab Coat (Medium)', location: 'Science Dept', description: 'Clean, used for 1 semester.', category: 'Clothing', price: 20.00, userId: 'other_user', inStorage: false }
-        ];
+        let items = [];
+
 
         // Functions
         function navigateTo(filter) {
@@ -472,31 +474,61 @@
             toggleModal('contactModal', true);
         }
 
-        function handlePostSubmit(e) {
-            e.preventDefault();
-            const priceVal = document.getElementById('postPrice').value;
-            const amount = priceVal ? parseFloat(priceVal) : null;
-            
-            const newItem = {
-                id: Math.floor(100 + Math.random() * 900),
-                type: currentFormType,
-                title: document.getElementById('postTitle').value,
-                location: document.getElementById('postLocation').value,
-                category: document.getElementById('postCategory').value,
-                description: document.getElementById('postDesc').value,
-                reward: currentFormType === 'lost' ? amount : null,
-                price: currentFormType === 'sell' ? amount : null,
-                date: 'Today',
-                userId: CURRENT_USER_ID,
-                inStorage: currentFormType !== 'sell'
-            };
-            
-            items.unshift(newItem);
-            toggleModal('postModal', false);
-            e.target.reset();
-            showToast("Item logged successfully!");
-            updateUI();
-        }
+        async function handlePostSubmit(e) {
+    e.preventDefault();
+
+    const Item = Parse.Object.extend("ClubItems");
+    const item = new Item();
+
+    const priceVal = document.getElementById('postPrice').value;
+    const amount = priceVal ? parseFloat(priceVal) : null;
+
+    item.set("type", currentFormType);
+    item.set("title", document.getElementById('postTitle').value);
+    item.set("location", document.getElementById('postLocation').value);
+    item.set("category", document.getElementById('postCategory').value);
+    item.set("description", document.getElementById('postDesc').value);
+    item.set("reward", currentFormType === 'lost' ? amount : null);
+    item.set("price", currentFormType === 'sell' ? amount : null);
+    item.set("userId", CURRENT_USER_ID);
+    item.set("inStorage", currentFormType !== 'sell');
+
+    try {
+        await item.save();
+        showToast("Item saved permanently ✅");
+        toggleModal('postModal', false);
+        e.target.reset();
+        loadItems(); // reload from DB
+    } catch (err) {
+        alert("Save Error: " + err.message);
+    }
+}
+async function loadItems() {
+    const Item = Parse.Object.extend("ClubItems");
+    const query = new Parse.Query(Item);
+    query.descending("createdAt");
+
+    try {
+        const results = await query.find();
+        items = results.map(obj => ({
+            id: obj.id,
+            type: obj.get("type"),
+            title: obj.get("title"),
+            location: obj.get("location"),
+            description: obj.get("description"),
+            category: obj.get("category"),
+            reward: obj.get("reward"),
+            price: obj.get("price"),
+            userId: obj.get("userId"),
+            inStorage: obj.get("inStorage")
+        }));
+
+        updateUI();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 
         function showToast(text) {
             const toast = document.getElementById('toast');
@@ -505,46 +537,23 @@
             setTimeout(() => toast.classList.add('hidden'), 3000);
         }
 
-        function deleteItem(id) {
-            items = items.filter(i => i.id !== id);
-            showToast("Log removed");
-            updateUI();
-        }
+       async function deleteItem(id) {
+    const Item = Parse.Object.extend("ClubItems");
+    const query = new Parse.Query(Item);
 
-        function updateUI() {
-            const grid = document.getElementById('itemsGrid');
-            const emptyState = document.getElementById('emptyState');
-            const activityBtn = document.getElementById('myActivityBtn');
+    try {
+        const obj = await query.get(id);
+        await obj.destroy();
+        showToast("Deleted from database");
+        loadItems();
+    } catch (err) {
+        alert(err.message);
+    }
+}
 
-            if (isMyActivity) {
-                activityBtn.classList.add('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-200');
-            } else {
-                activityBtn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-200');
-            }
 
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-slate-900', 'text-white');
-                btn.classList.add('text-slate-500', 'hover:bg-slate-100');
-            });
-            const activeBtn = document.getElementById(`filter-${activeFilter}`);
-            if (activeBtn) activeBtn.classList.add('bg-slate-900', 'text-white');
+       loadItems();
 
-            const filteredData = isMyActivity 
-                ? items.filter(i => i.userId === CURRENT_USER_ID)
-                : (activeFilter === 'all' ? items : items.filter(i => i.type === activeFilter));
-
-            grid.innerHTML = '';
-            if (filteredData.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                filteredData.forEach(item => {
-                    grid.innerHTML += createItemCard(item);
-                });
-            }
-
-            document.getElementById('statInStorage').innerText = items.filter(i => i.inStorage).length;
-        }
 
         function createItemCard(item) {
             const isOwner = item.userId === CURRENT_USER_ID;
