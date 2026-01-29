@@ -552,8 +552,40 @@ async function loadItems() {
 }
 
 
-       loadItems();
+        function updateUI() {
+            const grid = document.getElementById('itemsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const activityBtn = document.getElementById('myActivityBtn');
 
+            if (isMyActivity) {
+                activityBtn.classList.add('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-200');
+            } else {
+                activityBtn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-200');
+            }
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('text-slate-500', 'hover:bg-slate-100');
+            });
+            const activeBtn = document.getElementById(`filter-${activeFilter}`);
+            if (activeBtn) activeBtn.classList.add('bg-slate-900', 'text-white');
+
+            const filteredData = isMyActivity 
+                ? items.filter(i => i.userId === CURRENT_USER_ID)
+                : (activeFilter === 'all' ? items : items.filter(i => i.type === activeFilter));
+
+            grid.innerHTML = '';
+            if (filteredData.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filteredData.forEach(item => {
+                    grid.innerHTML += createItemCard(item);
+                });
+            }
+
+            document.getElementById('statInStorage').innerText = items.filter(i => i.inStorage).length;
+        }
 
         function createItemCard(item) {
             const isOwner = item.userId === CURRENT_USER_ID;
