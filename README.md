@@ -6,7 +6,7 @@ The ultimate digital ecosystem for student collaboration, event management, and 
 
 CampusConnect is a comprehensive web platform designed to bridge the gap between students, faculty, and campus resources. It provides a centralized hub for real-time communication, event scheduling, and academic resource sharing, ensuring you never miss a beat on campus life.
 
-Live Demo: https://campusconnect-5l8ulebt.b4a.run
+Live Demo: [[https://campusconnect-5l8ulebt.b4a.run]]
 
 ✨ Key Features
 
